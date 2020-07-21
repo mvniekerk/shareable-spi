@@ -1,11 +1,11 @@
 [package]
 name = "shareable-spi"
-version = "0.1.0"
+version = "0.0.0"
 authors = ["Michael van Niekerk <mvniekerk@chazaqdev.com>"]
-description = "HAL and Peripheral access API for ATSAMD11, ATSAMD21, ATSAMD51 and ATSAME54 microcontrollers"
+description = "Naive sharing of an SPI between peripherals"
 keywords = ["no-std", "spi", "embedded-hal"]
 license = "MIT OR Apache-2.0"
-repository = "https://github.com/atsamd-rs/atsamd"
+repository = "https://github.com/mvniekerk/shareable-spi"
 readme = "README.md"
 documentation = "https://atsamd-rs.github.io/atsamd/atsamd21g18a/atsamd21_hal/"
 edition = "2018"
@@ -13,3 +13,5 @@ edition = "2018"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+embedded-hal = "~0.2.3"
+
