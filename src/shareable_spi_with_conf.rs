@@ -1,22 +1,20 @@
-use embedded_hal::spi::Mode;
-use embedded_hal::blocking::spi;
-use crate::spi_lock::SpiLock;
 use crate::reconfigurable_mode::ReconfigurableSpiMode;
-use embedded_hal::blocking::spi::Transfer;
+use crate::spi_lock::SpiLock;
+use embedded_hal::blocking::spi;
+use embedded_hal::spi::Mode;
 
 pub struct SharedSpiWithConf<SPI, DEV> {
     spi: SPI,
     mode: Mode,
-    _marker: core::marker::PhantomData<DEV>
+    _marker: core::marker::PhantomData<DEV>,
 }
 
 impl<SPI, DEV> SharedSpiWithConf<SPI, DEV> {
-    pub fn new(spi: SPI, mode: Mode) -> Self
-    {
+    pub fn new(spi: SPI, mode: Mode) -> Self {
         SharedSpiWithConf {
             spi,
             mode,
-            _marker: Default::default()
+            _marker: Default::default(),
         }
     }
 
@@ -28,9 +26,9 @@ impl<SPI, DEV> SharedSpiWithConf<SPI, DEV> {
 unsafe impl<DEV, SPI> Sync for SharedSpiWithConf<SPI, DEV> {}
 
 impl<SPI, DEV> spi::Transfer<u8> for SharedSpiWithConf<SPI, DEV>
-    where
-        SPI: SpiLock<DEV>,
-        DEV: spi::Transfer<u8> + ReconfigurableSpiMode
+where
+    SPI: SpiLock<DEV>,
+    DEV: spi::Transfer<u8> + ReconfigurableSpiMode,
 {
     type Error = DEV::Error;
 
@@ -44,9 +42,9 @@ impl<SPI, DEV> spi::Transfer<u8> for SharedSpiWithConf<SPI, DEV>
 }
 
 impl<SPI, DEV> spi::Write<u8> for SharedSpiWithConf<SPI, DEV>
-    where
-        SPI: SpiLock<DEV>,
-        DEV: spi::Write<u8> + ReconfigurableSpiMode
+where
+    SPI: SpiLock<DEV>,
+    DEV: spi::Write<u8> + ReconfigurableSpiMode,
 {
     type Error = DEV::Error;
 
