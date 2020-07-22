@@ -26,6 +26,8 @@ panic_rtt = "~0.2"
 [dependencies.atsamd-hal]
 version = "~0.8"
 default-features = false
+git = "https://github.com/atsamd-rs/atsamd"
+path = "hal"
 
 [dependencies.cortex-m-rt]
 version = "~0.6.12"

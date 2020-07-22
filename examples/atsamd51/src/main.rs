@@ -132,7 +132,7 @@ const APP: () = {
             MODE_0, MODE_1, MODE_2, MODE_3,
         );
 
-        let e25x = spi_memory::series25::Flash::init_with_page_size(eep_spi, eep_cs, 256);
+        let e25x = spi_memory::series25::Flash::init_with_page_size(&eep_spi, eep_cs, 256);
 
         if let Err(_e) = e25x {
             loop {}

@@ -9,6 +9,7 @@ use embedded_hal::spi::Mode;
 use gpio::{Floating, Input, Port};
 use shareable_spi::{SharedSpiWithConf, SharedSpi, ReconfigurableSpiMode};
 use atsamd_hal::sercom::{PadPin, SPIMaster5};
+use core::ops::Deref;
 
 pub type SpiMaster = SPIMaster5<
     hal::sercom::Sercom5Pad3<gpio::Pa25<gpio::PfD>>,
@@ -17,7 +18,8 @@ pub type SpiMaster = SPIMaster5<
 >;
 
 pub type Spi5 = SharedSpi<SpiMaster>;
-pub type SharedSpi5<'a> = SharedSpiWithConf<&'a Spi5, SpiMaster>;
+pub struct Spi5Wrapper<'a>(&'a Spi5);
+pub type SharedSpi5<'a> = SharedSpiWithConf<Spi5Wrapper<'a>, SpiMaster>;
 
 pub fn spi_master<F: Into<Hertz>>(
     clocks: &mut GenericClockController,
@@ -48,15 +50,23 @@ pub fn shared_spi(
     spi5: &Spi5,
     lora: Mode, adxl313: Mode, tc72: Mode, eeprom: Mode
 ) -> (SharedSpi5, SharedSpi5, SharedSpi5, SharedSpi5) {
-    let lora = SharedSpiWithConf::new(spi5, lora);
-    let adxl313 = SharedSpiWithConf::new(spi5, adxl313);
-    let tc72 = SharedSpiWithConf::new(spi5, tc72);
-    let eeprom = SharedSpiWithConf::new(spi5, eeprom);
+    let lora = SharedSpiWithConf::new(Spi5Wrapper(spi5), lora);
+    let adxl313 = SharedSpiWithConf::new(Spi5Wrapper(spi5), adxl313);
+    let tc72 = SharedSpiWithConf::new(Spi5Wrapper(spi5), tc72);
+    let eeprom = SharedSpiWithConf::new(Spi5Wrapper(spi5), eeprom);
     (lora, adxl313, tc72, eeprom)
 }
 
-impl ReconfigurableSpiMode for SpiMaster {
+impl<'a> ReconfigurableSpiMode for Spi5Wrapper<'a> {
     fn change_spi_mode(&mut self, mode: Mode) {
-        self.set_mode(mode);
+        self.0.set_mode(mode);
+    }
+}
+
+impl<'a> Deref for Spi5Wrapper<'a> {
+    type Target = &'a SharedSpi<SpiMaster>;
+
+    fn deref(&self) -> &Self::Target {
+        &self.0
     }
 }

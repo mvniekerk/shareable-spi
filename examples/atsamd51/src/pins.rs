@@ -1,11 +1,8 @@
-//! PyPortal pins
 use atsamd_hal::{hal, target_device, define_pins};
 
 use atsamd_hal::common::gpio::{self, *};
 
 define_pins!(
-    /// Maps the pins to their arduino names and
-    /// the numbers printed on the board.
     struct Pins,
     target_device: target_device,
 
