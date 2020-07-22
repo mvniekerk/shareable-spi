@@ -8,9 +8,6 @@ extern crate shareable_spi;
 
 use atsamd_hal as hal;
 
-#[cfg(feature = "rt")]
-pub use cortex_m_rt::entry;
-
 pub mod pins;
 pub mod spi;
 
@@ -60,6 +57,12 @@ use embedded_hal::spi::{MODE_0, MODE_1, MODE_2, MODE_3};
 use crate::spi::{shared_spi, spi_master};
 use atsamd_hal::common::gpio::{PushPull, Output, OpenDrain, Pa7, Pa13, Pa15, Pa24, Pa6};
 
+use rtic::{app, Peripherals};
+
+#[cfg(not(feature = "use_semihosting"))]
+extern crate panic_halt;
+#[cfg(feature = "use_semihosting")]
+extern crate panic_semihosting;
 
 #[cfg(feature = "use_semihosting")]
 macro_rules! dbgprint {
@@ -77,10 +80,9 @@ macro_rules! dbgprint {
 macro_rules! dbgprint {
     ($($arg:tt)*) => {{}};
 }
-
 const FREQUENCY: i64 = 868;
 
-#[app(device = crate::hal::pac, peripherals = true)]
+#[app(device = atsamd_hal::target_device, peripherals = true)]
 const APP: () = {
     struct Resources {
         lora: sx127x_lora::LoRa<SharedSpi5<'static>, Pa7<Output<PushPull>>, Pa6<Output<OpenDrain>>>,
@@ -94,8 +96,11 @@ const APP: () = {
     #[init]
     fn init(c: init::Context) -> init::LateResources {
         static mut SPI5: Option<Spi5> = None;
-        let mut device: hal::pac::Peripherals = c.device;
-        let mut core: hal::pac::CorePeripherals = hal::pac::CorePeripherals::take().unwrap();
+        let mut device: Peripherals = c.device;
+        // let mut device: hal::pac::Peripherals = c.device;
+        // let mut core: rtic
+        // let mut core: atsamd_hal::target_device::CorePeripherals = atsamd_hal::target_device::Peripherals::take().unwrap();
+        let mut core = atsamd_hal::target_device::Peripherals::take().unwrap();
 
         let mut clocks = GenericClockController::with_external_32kosc(
             device.GCLK,
