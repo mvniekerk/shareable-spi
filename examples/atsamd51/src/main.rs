@@ -26,15 +26,6 @@ use embedded_hal::spi::Polarity::{IdleLow, IdleHigh};
 use embedded_hal::spi::Phase::{CaptureOnFirstTransition, CaptureOnSecondTransition};
 use embedded_hal::spi::Mode;
 
-pub type SpiMaster = SPIMaster5<
-    hal::sercom::Sercom5Pad3<gpio::Pa25<gpio::PfD>>,
-    hal::sercom::Sercom5Pad0<gpio::Pa23<gpio::PfD>>,
-    hal::sercom::Sercom5Pad1<gpio::Pa22<gpio::PfD>>,
->;
-
-pub type Spi5 = SharedSpi<SpiMaster>;
-pub type SharedSpi5<'a> = SharedSpiWithConf<&'a Spi5, SpiMaster>;
-
 // use cortex_m_semihosting::hio;
 use core::fmt::Write;
 
@@ -58,6 +49,9 @@ use crate::spi::{shared_spi, spi_master};
 use atsamd_hal::common::gpio::{PushPull, Output, OpenDrain, Pa7, Pa13, Pa15, Pa24, Pa6};
 
 use rtic::{app, Peripherals};
+
+use crate::spi::{Spi5, SharedSpi5};
+
 
 #[cfg(not(feature = "use_semihosting"))]
 extern crate panic_halt;

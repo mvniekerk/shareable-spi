@@ -7,10 +7,17 @@ pub use hal::common::*;
 pub use hal::samd51::*;
 use embedded_hal::spi::Mode;
 use gpio::{Floating, Input, Port};
-use crate::{Spi5, SharedSpi5};
-use shareable_spi::{SharedSpiWithConf, SharedSpi};
+use shareable_spi::{SharedSpiWithConf, SharedSpi, ReconfigurableSpiMode};
 use atsamd_hal::sercom::{PadPin, SPIMaster5};
 
+pub type SpiMaster = SPIMaster5<
+    hal::sercom::Sercom5Pad3<gpio::Pa25<gpio::PfD>>,
+    hal::sercom::Sercom5Pad0<gpio::Pa23<gpio::PfD>>,
+    hal::sercom::Sercom5Pad1<gpio::Pa22<gpio::PfD>>,
+>;
+
+pub type Spi5 = SharedSpi<SpiMaster>;
+pub type SharedSpi5<'a> = SharedSpiWithConf<&'a Spi5, SpiMaster>;
 
 pub fn spi_master<F: Into<Hertz>>(
     clocks: &mut GenericClockController,
@@ -46,4 +53,10 @@ pub fn shared_spi(
     let tc72 = SharedSpiWithConf::new(spi5, tc72);
     let eeprom = SharedSpiWithConf::new(spi5, eeprom);
     (lora, adxl313, tc72, eeprom)
+}
+
+impl ReconfigurableSpiMode for SpiMaster {
+    fn change_spi_mode(&mut self, mode: Mode) {
+        self.set_mode(mode);
+    }
 }

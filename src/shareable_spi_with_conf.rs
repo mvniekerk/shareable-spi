@@ -3,6 +3,9 @@ use crate::spi_lock::SpiLock;
 use embedded_hal::blocking::spi;
 use embedded_hal::spi::Mode;
 
+/// A simple wrapper that wraps something that implements the SpiLock interface - whose
+/// SpiLock interface's lock() returns a device that implements the necessary Transfer/Write
+/// traits but also the ReconfigurableMode trait
 pub struct SharedSpiWithConf<SPI, DEV> {
     spi: SPI,
     mode: Mode,
@@ -25,6 +28,7 @@ impl<SPI, DEV> SharedSpiWithConf<SPI, DEV> {
 
 unsafe impl<DEV, SPI> Sync for SharedSpiWithConf<SPI, DEV> {}
 
+/// SPI transfer
 impl<SPI, DEV> spi::Transfer<u8> for SharedSpiWithConf<SPI, DEV>
 where
     SPI: SpiLock<DEV>,
@@ -41,6 +45,7 @@ where
     }
 }
 
+/// SPI Write
 impl<SPI, DEV> spi::Write<u8> for SharedSpiWithConf<SPI, DEV>
 where
     SPI: SpiLock<DEV>,

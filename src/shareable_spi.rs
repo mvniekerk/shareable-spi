@@ -7,11 +7,14 @@ use crate::reconfigurable_mode::ReconfigurableSpiMode;
 
 /// Simple wrapper to share a SPI bus between multiple drivers. Will panic if two drivers attempt to
 /// access it at the same time.
+/// Can be used as-is when there are no mode differences between the SPI devices
 pub struct SharedSpi<DEV> {
     spi: UnsafeCell<DEV>,
     busy: AtomicBool,
 }
 
+/// Locks the SPI device or crashes. So check busy() first before you engage this.
+/// After locking it, runs an FnOnce with the SPI device as parameter
 impl<SPI> SpiLock<SPI> for &SharedSpi<SPI> {
     fn lock<R, F: FnOnce(&mut SPI) -> R>(&self, f: F) -> R {
         self.busy
@@ -24,6 +27,7 @@ impl<SPI> SpiLock<SPI> for &SharedSpi<SPI> {
         r
     }
 
+    /// Get from the atomic bool if the device is busy
     fn busy(&self) -> bool {
         self.busy.load(Ordering::Relaxed)
     }
@@ -31,6 +35,7 @@ impl<SPI> SpiLock<SPI> for &SharedSpi<SPI> {
 
 unsafe impl<SPI> Sync for SharedSpi<SPI> {}
 
+/// SPI Transfer
 impl<SPI> spi::Transfer<u8> for &SharedSpi<SPI>
 where
     SPI: spi::Transfer<u8>,
@@ -42,6 +47,7 @@ where
     }
 }
 
+/// SPI Write
 impl<SPI> spi::Write<u8> for &SharedSpi<SPI>
 where
     SPI: spi::Write<u8> + ReconfigurableSpiMode,
