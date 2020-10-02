@@ -64,9 +64,25 @@ impl<'a> ReconfigurableSpiMode for Spi5Wrapper<'a> {
 }
 
 impl<'a> Deref for Spi5Wrapper<'a> {
-    type Target = &'a SharedSpi<SpiMaster>;
+    type Target = &'a Spi5;
 
     fn deref(&self) -> &Self::Target {
         &self.0
     }
 }
+
+// impl<'a> Deref for Spi5Wrapper<'a> {
+//     type Target = &'a dyn embedded_hal::blocking::spi::Write<u8, Error = atsamd_hal::samd51::sercom::Error>;
+//
+//     fn deref(&self) -> &Self::Target {
+//         &self.0
+//     }
+// }
+//
+// impl<'a> Deref for Spi5Wrapper<'a> {
+//     type Target = &'a dyn ReconfigurableSpiMode;
+//
+//     fn deref(&self) -> &Self::Target {
+//         &self.0
+//     }
+// }

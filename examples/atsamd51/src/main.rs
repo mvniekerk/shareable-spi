@@ -83,6 +83,7 @@ const APP: () = {
         adxl313: adxl313::Adxl313<SharedSpi5<'static>, Pa13<Output<PushPull>>>,
         tc72: microchip_tc72r_rs::Tc72<SharedSpi5<'static>, Pa15<Output<OpenDrain>>>,
         e25x: spi_memory::series25::Flash<SharedSpi5<'static>, Pa24<Output<OpenDrain>>>,
+        // e25x: spi_memory::series25::Flash<, Pa24<Output<OpenDrain>>>,
         delay: atsamd_hal::common::delay::Delay,
         spi: &'static Spi5,
     }
@@ -91,9 +92,6 @@ const APP: () = {
     fn init(c: init::Context) -> init::LateResources {
         static mut SPI5: Option<Spi5> = None;
         let mut device: Peripherals = c.device;
-        // let mut device: hal::pac::Peripherals = c.device;
-        // let mut core: rtic
-        // let mut core: atsamd_hal::target_device::CorePeripherals = atsamd_hal::target_device::Peripherals::take().unwrap();
         let mut core = atsamd_hal::target_device::Peripherals::take().unwrap();
 
         let mut clocks = GenericClockController::with_external_32kosc(
