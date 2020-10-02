@@ -6,15 +6,15 @@ use embedded_hal::spi::Mode;
 /// A simple wrapper that wraps something that implements the SpiLock interface - whose
 /// SpiLock interface's lock() returns a device that implements the necessary Transfer/Write
 /// traits but also the ReconfigurableMode trait
-pub struct SharedSpiWithConf<SPI, DEV> {
+pub struct ShareableSpiWithConf<SPI, DEV> {
     spi: SPI,
     mode: Mode,
     _marker: core::marker::PhantomData<DEV>,
 }
 
-impl<SPI, DEV> SharedSpiWithConf<SPI, DEV> {
+impl<SPI, DEV> ShareableSpiWithConf<SPI, DEV> {
     pub fn new(spi: SPI, mode: Mode) -> Self {
-        SharedSpiWithConf {
+        ShareableSpiWithConf {
             spi,
             mode,
             _marker: Default::default(),
@@ -26,10 +26,10 @@ impl<SPI, DEV> SharedSpiWithConf<SPI, DEV> {
     }
 }
 
-unsafe impl<DEV, SPI> Sync for SharedSpiWithConf<SPI, DEV> {}
+unsafe impl<DEV, SPI> Sync for ShareableSpiWithConf<SPI, DEV> {}
 
 /// SPI transfer
-impl<SPI, DEV> spi::Transfer<u8> for SharedSpiWithConf<SPI, DEV>
+impl<SPI, DEV> spi::Transfer<u8> for ShareableSpiWithConf<SPI, DEV>
 where
     SPI: SpiLock<DEV>,
     DEV: spi::Transfer<u8> + ReconfigurableSpiMode,
@@ -46,7 +46,7 @@ where
 }
 
 /// SPI Write
-impl<SPI, DEV> spi::Write<u8> for SharedSpiWithConf<SPI, DEV>
+impl<SPI, DEV> spi::Write<u8> for ShareableSpiWithConf<SPI, DEV>
 where
     SPI: SpiLock<DEV>,
     DEV: spi::Write<u8> + ReconfigurableSpiMode,

@@ -9,5 +9,5 @@ mod spi_lock;
 
 pub use reconfigurable_mode::ReconfigurableSpiMode;
 pub use shareable_spi::SharedSpi;
-pub use shareable_spi_with_conf::SharedSpiWithConf;
+pub use shareable_spi_with_conf::ShareableSpiWithConf;
 pub use spi_lock::SpiLock;

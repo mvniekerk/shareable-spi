@@ -21,7 +21,7 @@ pub use hal::samd51::*;
 use gpio::{Floating, Input, Port};
 use hal::sercom::{PadPin, SPIMaster5};
 use hal::time::Hertz;
-use shareable_spi::{SharedSpi, SharedSpiWithConf};
+use shareable_spi::{SharedSpi, ShareableSpiWithConf};
 use embedded_hal::spi::Polarity::{IdleLow, IdleHigh};
 use embedded_hal::spi::Phase::{CaptureOnFirstTransition, CaptureOnSecondTransition};
 use embedded_hal::spi::Mode;
@@ -82,7 +82,7 @@ const APP: () = {
         lora: sx127x_lora::LoRa<SharedSpi5<'static>, Pa7<Output<PushPull>>, Pa6<Output<OpenDrain>>>,
         adxl313: adxl313::Adxl313<SharedSpi5<'static>, Pa13<Output<PushPull>>>,
         tc72: microchip_tc72r_rs::Tc72<SharedSpi5<'static>, Pa15<Output<OpenDrain>>>,
-        e25x: spi_memory::series25::Flash<SharedSpi5<'static>, Pa24<Output<OpenDrain>>>,
+        // e25x: spi_memory::series25::Flash<SharedSpi5<'static>, Pa24<Output<OpenDrain>>>,
         // e25x: spi_memory::series25::Flash<, Pa24<Output<OpenDrain>>>,
         delay: atsamd_hal::common::delay::Delay,
         spi: &'static Spi5,

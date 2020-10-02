@@ -13,6 +13,15 @@ pub struct SharedSpi<DEV> {
     busy: AtomicBool,
 }
 
+impl<SPI> SharedSpi<SPI> {
+    pub fn new(spi: SPI) -> SharedSpi<SPI> {
+        return SharedSpi {
+            spi: UnsafeCell::new(spi),
+            busy: AtomicBool::new(false)
+        }
+    }
+}
+
 /// Locks the SPI device or crashes. So check busy() first before you engage this.
 /// After locking it, runs an FnOnce with the SPI device as parameter
 impl<SPI> SpiLock<SPI> for &SharedSpi<SPI> {
@@ -50,7 +59,7 @@ where
 /// SPI Write
 impl<SPI> spi::Write<u8> for &SharedSpi<SPI>
 where
-    SPI: spi::Write<u8> + ReconfigurableSpiMode,
+    SPI: spi::Write<u8>,
 {
     type Error = SPI::Error;
 
