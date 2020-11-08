@@ -3,8 +3,6 @@ use core::cell::UnsafeCell;
 use core::sync::atomic::{AtomicBool, Ordering};
 use embedded_hal::blocking::spi;
 
-use crate::reconfigurable_mode::ReconfigurableSpiMode;
-
 /// Simple wrapper to share a SPI bus between multiple drivers. Will panic if two drivers attempt to
 /// access it at the same time.
 /// Can be used as-is when there are no mode differences between the SPI devices
